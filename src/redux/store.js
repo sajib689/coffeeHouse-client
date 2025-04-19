@@ -9,6 +9,8 @@ export const store = configureStore({
         [coffeesApi.reducerPath]: coffeesApi.reducer
     },
     middleware: (getDefaultMiddleware) => {
-        getDefaultMiddleware().concat(usersApi.middleware)
+        getDefaultMiddleware().concat(usersApi.middleware),
+        getDefaultMiddleware().concat(coffeesApi.middleware)
     }
+
 })
