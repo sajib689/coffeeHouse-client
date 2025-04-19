@@ -1,70 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { AuthContext } from "@/context/AuthProvider";
+import { useCreateUserMutation } from "@/features/users/usersApi";
+import { useContext, useState } from "react";
 
 const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("user");
-  const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
-
-  const validateForm = () => {
-    const errors = {};
-    if (!name) errors.name = "Name is required";
-    if (!email) {
-      errors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = "Invalid email address";
-    }
-    if (!password) {
-      errors.password = "Password is required";
-    } else if (password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
-    }
-    return errors;
-  };
+  const { createUserWithForm, loading } = useContext(AuthContext);
+  const [createUser] = useCreateUserMutation();
+  const [formError, setFormError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateForm();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    setFormError("");
+
+    const form = e.currentTarget;
+    const name = form.name.value;
+    const email = form.email.value;
+    const password = form.password.value;
+    const role = form.role.value;
+
+    if (!name || !email || !password) {
+      setFormError("All fields are required.");
       return;
     }
 
-    setLoading(true);
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, email, password, role }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("User registered:", data);
-        // Handle success (e.g., redirect or show a success message)
-      } else {
-        console.error("Registration error:", data);
-        // Handle error (e.g., show an error message)
+      const res = await createUserWithForm(email, password);
+      if (res?.user) {
+        await createUser({
+          name,
+          email,
+          role,
+        });
+        form.reset();
       }
-    } catch (error) {
-      console.error("Registration error:", error);
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setFormError("Failed to register. Please try again.");
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">Create an Account</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">
+          Create an Account
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Name and Email in One Line */}
             <div className="mb-4">
               <label htmlFor="name" className="block text-gray-700 font-medium mb-2">
                 Name
@@ -74,10 +57,7 @@ const RegisterPage = () => {
                 name="name"
                 type="text"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
               />
-              {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
             </div>
 
             <div className="mb-4">
@@ -89,15 +69,11 @@ const RegisterPage = () => {
                 name="email"
                 type="email"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
               />
-              {errors.email && <div className="text-red-500 text-sm mt-1">{errors.email}</div>}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Password and Role in One Line */}
             <div className="mb-4">
               <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
                 Password
@@ -107,10 +83,7 @@ const RegisterPage = () => {
                 name="password"
                 type="password"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
               />
-              {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password}</div>}
             </div>
 
             <div className="mb-4">
@@ -121,15 +94,16 @@ const RegisterPage = () => {
                 id="role"
                 name="role"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </select>
-              {errors.role && <div className="text-red-500 text-sm mt-1">{errors.role}</div>}
             </div>
           </div>
+
+          {formError && (
+            <div className="text-red-500 text-sm mt-2">{formError}</div>
+          )}
 
           <button
             type="submit"
@@ -139,6 +113,7 @@ const RegisterPage = () => {
             {loading ? "Registering..." : "Register"}
           </button>
         </form>
+
         <div className="mt-4 text-center text-sm text-gray-600">
           Already have an account?{" "}
           <a href="/login" className="text-[#6F4F37] hover:underline">
