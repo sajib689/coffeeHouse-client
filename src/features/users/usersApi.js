@@ -37,4 +37,8 @@ export const usersApi = createApi({
     })
 })
 
-export const {} = usersApi
+export const {useGetUsersQuery,
+    useGetUserByIdQuery,
+    useCreateUserMutation,
+    useUpdateUserMutation,
+    useDeleteUserMutation,} = usersApi
