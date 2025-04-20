@@ -30,15 +30,15 @@ export const usersApi = createApi({
                 method: 'DELETE'
             })
         }),
-        getUserById: build.query({
-            query: (id) => `/users/${id}`
+        getUserByEmail: build.query({
+            query: (email) => `/users/${email}`
         })
 
     })
 })
 
 export const {useGetUsersQuery,
-    useGetUserByIdQuery,
+    useGetUserByEmailQuery,
     useCreateUserMutation,
     useUpdateUserMutation,
     useDeleteUserMutation,} = usersApi
