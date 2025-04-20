@@ -30,6 +30,13 @@ export const usersApi = createApi({
                 method: 'DELETE'
             })
         }),
+        updateUserRole: build.mutation({
+            query: (id,role) => ({
+                url: `/users/${id}/role`,
+                method: 'PATCH',
+                body: role,
+            })
+        }),
         getUserByEmail: build.query({
             query: (email) => `/users/${email}`
         })
@@ -37,8 +44,11 @@ export const usersApi = createApi({
     })
 })
 
-export const {useGetUsersQuery,
+export const {
+    useGetUsersQuery,
     useGetUserByEmailQuery,
     useCreateUserMutation,
     useUpdateUserMutation,
-    useDeleteUserMutation,} = usersApi
+    useDeleteUserMutation,
+    useUpdateUserRoleMutation
+} = usersApi
