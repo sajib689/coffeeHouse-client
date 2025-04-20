@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useRouter } from "next/navigation"; 
+import { AuthContext } from "@/context/AuthProvider"; 
+import toast,{ Toaster } from "react-hot-toast";
 
 const LoginPage = () => {
+  const { signWithForm } = useContext(AuthContext);
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [firebaseError, setFirebaseError] = useState("");
 
   const validateForm = () => {
     const errors = {};
@@ -23,6 +30,7 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFirebaseError("");
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -31,23 +39,15 @@ const LoginPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        console.log("Login successful:", data);
-        // Handle success (e.g., redirect or show a success message)
-      } else {
-        console.error("Login error:", data);
-        // Handle error (e.g., show an error message)
+      const result = await signWithForm(email, password);
+      toast.success("Login successful! 🎉");
+
+      if (result?.user) {
+        router.push("/"); 
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Firebase login error:", error.message);
+      setFirebaseError("Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -55,8 +55,12 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+                  <Toaster position="top-center" reverseOrder={false} />
+
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">Login to Your Account</h2>
+        <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">
+          Login to Your Account
+        </h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
@@ -85,8 +89,14 @@ const LoginPage = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            {errors.password && <div className="text-red-500 text-sm mt-1">{errors.password}</div>}
+            {errors.password && (
+              <div className="text-red-500 text-sm mt-1">{errors.password}</div>
+            )}
           </div>
+
+          {firebaseError && (
+            <div className="text-red-500 text-sm mt-2">{firebaseError}</div>
+          )}
 
           <button
             type="submit"
@@ -96,6 +106,7 @@ const LoginPage = () => {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
+
         <div className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{" "}
           <a href="/register" className="text-[#6F4F37] hover:underline">
