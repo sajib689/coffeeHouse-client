@@ -66,7 +66,7 @@ const RegisterPage = () => {
 
         form.reset();  
         toast.success("Registration successful! 🎉");
-        navigate('/')
+        navigate.push('/')
 
       }
     } catch (err) {
