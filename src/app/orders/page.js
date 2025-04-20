@@ -104,7 +104,8 @@ console.log(orders)
 
   {order.status === "approved" && (
     <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-black rounded opacity-0 group-hover:opacity-100 transition">
-      You can't cancel an approved order
+      <p>It&rsquo;s a great coffee</p>
+
     </span>
   )}
 </div>

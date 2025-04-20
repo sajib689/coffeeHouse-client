@@ -2,11 +2,15 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const coffeesApi = createApi({
   reducerPath: "coffees",
   baseQuery: fetchBaseQuery({
-    baseUrl: `http://localhost:5000/api/v1`,
+    baseUrl: `https://coffee-house-server-alpha.vercel.app/api/v1`,
   }),
   endpoints: (build) => ({
     getCoffees: build.query({
       query: () => "/coffees",
+    }),
+    
+    getCoffeeById: build.query({
+      query: (id) => `/coffees/${id}`,
     }),
     createCoffee: build.mutation({
       query: (coffee) => ({
@@ -27,9 +31,6 @@ export const coffeesApi = createApi({
         url: `/coffees/${id}`,
         method: "DELETE",
       }),
-    }),
-    getCoffeeById: build.query({
-      query: (id) => `/coffees/${id}`,
     }),
   }),
 });

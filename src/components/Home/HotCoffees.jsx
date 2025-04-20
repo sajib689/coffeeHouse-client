@@ -1,10 +1,12 @@
 "use client";
 import { useGetCoffeesQuery } from "@/features/coffees/coffeesApi";
 import Link from "next/link";
+import { useContext } from "react";
+import { AuthContext } from "@/context/AuthProvider";
 
 const HotCoffees = () => {
   const { data: coffees = [], isLoading } = useGetCoffeesQuery();
-
+  const {user} = useContext(AuthContext)
   // Filter only Hot Coffee
   const hotCoffees = coffees.filter(
     (coffee) => coffee.category === "Hot Coffee"
@@ -42,9 +44,22 @@ const HotCoffees = () => {
                   ${coffee.price}
                 </p> {/* Price Display */}
                 {/* Buy Now Button */}
-                <Link href={`/order/${coffee?._id}`} className="w-full py-2 px-4 bg-[#6F4F37] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out">
+                {
+                  !user?.email ?
+                  <Link
+                  href={`/login`}
+                  className="w-full py-2 px-4 bg-[#a59385] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out"
+                >
                   Buy Now
                 </Link>
+                :
+                <Link
+                  href={`/order/${coffee?._id}`}
+                  className="w-full py-2 px-4 bg-[#6F4F37] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out"
+                >
+                  Buy Now
+                </Link>
+                }
               </div>
             </div>
           ))}
