@@ -9,7 +9,6 @@ const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -87,7 +86,7 @@ const Navbar = () => {
               />
               <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-md hidden group-hover:block z-50 text-sm">
                 <Link
-                  href="/profile"
+                  href={user?.photoURL}
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Profile

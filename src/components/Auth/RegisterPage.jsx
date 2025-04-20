@@ -1,8 +1,13 @@
 "use client";
 
+import { useContext, useState } from "react";
+import axios from "axios";
 import { AuthContext } from "@/context/AuthProvider";
 import { useCreateUserMutation } from "@/features/users/usersApi";
-import { useContext, useState } from "react";
+import {  updateProfile } from "firebase/auth";
+
+const apiKey = "f5330ca78c6f9960d5308d89956366a7";
+const url = `https://api.imgbb.com/1/upload?key=${apiKey}`;
 
 const RegisterPage = () => {
   const { createUserWithForm, loading } = useContext(AuthContext);
@@ -12,26 +17,52 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
-
     const form = e.currentTarget;
-    const name = form.name.value;
-    const email = form.email.value;
-    const password = form.password.value;
-    const role = form.role.value;
 
-    if (!name || !email || !password) {
+    const name = form.name.value.trim();
+    const email = form.email.value.trim();
+    const password = form.password.value;
+    const imageFile = form.image.files[0];
+
+    if (!name || !email || !password || !imageFile) {
       setFormError("All fields are required.");
       return;
     }
 
     try {
+      // Upload image to ImgBB
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const uploadRes = await axios.post(url, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const imageUrl = uploadRes?.data?.data?.display_url;
+      if (!imageUrl) {
+        setFormError("Image upload failed.");
+        return;
+      }
+
+      // Firebase create user
       const res = await createUserWithForm(email, password);
+      console.log(res)
       if (res?.user) {
+        await updateProfile(res.user, {
+          displayName: name,
+          photoURL: imageUrl,
+        });
+      
         await createUser({
           name,
           email,
-          role,
+          password,
+          image: imageUrl,
+          role: "user",
         });
+
         form.reset();
       }
     } catch (err) {
@@ -87,17 +118,16 @@ const RegisterPage = () => {
             </div>
 
             <div className="mb-4">
-              <label htmlFor="role" className="block text-gray-700 font-medium mb-2">
-                Role
+              <label htmlFor="image" className="block text-gray-700 font-medium mb-2">
+                Profile Image
               </label>
-              <select
-                id="role"
-                name="role"
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
+              <input
+                id="image"
+                name="image"
+                type="file"
+                accept="image/*"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
             </div>
           </div>
 
