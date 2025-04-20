@@ -1,10 +1,12 @@
 "use client";
+import toast,{ Toaster } from "react-hot-toast";
 
 import { useContext, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "@/context/AuthProvider";
 import { useCreateUserMutation } from "@/features/users/usersApi";
 import {  updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 const apiKey = "f5330ca78c6f9960d5308d89956366a7";
 const url = `https://api.imgbb.com/1/upload?key=${apiKey}`;
@@ -13,7 +15,7 @@ const RegisterPage = () => {
   const { createUserWithForm, loading } = useContext(AuthContext);
   const [createUser] = useCreateUserMutation();
   const [formError, setFormError] = useState("");
-
+  const navigate = useRouter()
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError("");
@@ -48,7 +50,6 @@ const RegisterPage = () => {
 
       // Firebase create user
       const res = await createUserWithForm(email, password);
-      console.log(res)
       if (res?.user) {
         await updateProfile(res.user, {
           displayName: name,
@@ -63,7 +64,10 @@ const RegisterPage = () => {
           role: "user",
         });
 
-        form.reset();
+        form.reset();  
+        toast.success("Registration successful! 🎉");
+        navigate('/')
+
       }
     } catch (err) {
       console.error(err);
@@ -73,6 +77,8 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+            <Toaster position="top-center" reverseOrder={false} />
+
       <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
         <h2 className="text-3xl font-bold text-center text-gray-700 mb-6">
           Create an Account

@@ -4,11 +4,13 @@ import Link from "next/link";
 import { useContext, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AuthContext } from "./../../context/AuthProvider";
+import Loader from "@/util/Loader";
 
 const Navbar = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout,loading } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  
   const handleLogout = async () => {
     try {
       await logout();
@@ -61,7 +63,7 @@ const Navbar = () => {
       </Link>
     </>
   );
-
+if(loading) return <Loader/>
   return (
     <nav className="bg-white sticky top-0 z-50">
       <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
@@ -80,13 +82,13 @@ const Navbar = () => {
           {user ? (
             <div className="relative group">
               <img
-                src={user.photoURL || "/default-avatar.png"}
+                src={user?.photoURL || "/default-avatar.png"}
                 alt="Profile"
                 className="w-10 h-10 rounded-full cursor-pointer"
               />
               <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-md hidden group-hover:block z-50 text-sm">
                 <Link
-                  href={user?.photoURL}
+                  href='/profile'
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Profile
