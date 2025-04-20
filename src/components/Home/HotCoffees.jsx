@@ -1,5 +1,6 @@
 "use client";
 import { useGetCoffeesQuery } from "@/features/coffees/coffeesApi";
+import Link from "next/link";
 
 const HotCoffees = () => {
   const { data: coffees = [], isLoading } = useGetCoffeesQuery();
@@ -41,9 +42,9 @@ const HotCoffees = () => {
                   ${coffee.price}
                 </p> {/* Price Display */}
                 {/* Buy Now Button */}
-                <button className="w-full py-2 px-4 bg-[#6F4F37] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out">
+                <Link href={`/order/${coffee?._id}`} className="w-full py-2 px-4 bg-[#6F4F37] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out">
                   Buy Now
-                </button>
+                </Link>
               </div>
             </div>
           ))}

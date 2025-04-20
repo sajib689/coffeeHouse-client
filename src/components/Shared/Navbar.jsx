@@ -2,23 +2,31 @@
 
 import Link from "next/link";
 import { useContext, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AuthContext } from "./../../context/AuthProvider";
 import Loader from "@/util/Loader";
+import { useGetUserByEmailQuery } from "@/features/users/usersApi";
 
 const Navbar = () => {
-  const { user, logout,loading } = useContext(AuthContext);
+  const { user, logout, loading } = useContext(AuthContext);
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  
+
+  // Fetch user data using RTK Query hook
+  const { data: userData, isLoading: userLoading } = useGetUserByEmailQuery(user?.email, {
+    skip: !user?.email,
+  });
+
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout();              
+      router.push('/login');      
     } catch (err) {
       console.error("Logout Error:", err);
     }
   };
-
+  
   const navLinks = (
     <>
       <Link
@@ -63,7 +71,9 @@ const Navbar = () => {
       </Link>
     </>
   );
-if(loading) return <Loader/>
+
+  if (loading || userLoading) return <Loader />;
+
   return (
     <nav className="bg-white sticky top-0 z-50">
       <div className="w-full px-4 md:px-8 py-3 flex items-center justify-between">
@@ -88,7 +98,7 @@ if(loading) return <Loader/>
               />
               <div className="absolute right-0 mt-2 w-40 bg-white rounded shadow-md hidden group-hover:block z-50 text-sm">
                 <Link
-                  href='/profile'
+                  href="/profile"
                   className="block px-4 py-2 hover:bg-gray-100"
                 >
                   Profile
@@ -99,12 +109,14 @@ if(loading) return <Loader/>
                 >
                   Orders
                 </Link>
-                <Link
-                  href="/settings"
-                  className="block px-4 py-2 hover:bg-gray-100"
-                >
-                  Settings
-                </Link>
+                {userData?.role === "admin" && (
+                  <Link
+                    href="/admin"
+                    className="block px-4 py-2 hover:bg-gray-100"
+                  >
+                    Admin
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
@@ -168,7 +180,9 @@ if(loading) return <Loader/>
             <>
               <Link href="/profile">Profile</Link>
               <Link href="/orders">Orders</Link>
-              <Link href="/settings">Settings</Link>
+              {userData?.role === "admin" && (
+                <Link href="/admin">Admin</Link>
+              )}
               <button onClick={handleLogout}>Logout</button>
             </>
           ) : (
@@ -179,7 +193,6 @@ if(loading) return <Loader/>
               >
                 Sign In
               </Link>
-
               <Link
                 href="/signup"
                 className="block text-center bg-[#6F4F37] text-white rounded px-4 py-2 hover:bg-[#5C3D2D] transition duration-200"

@@ -18,7 +18,7 @@ export const coffeesApi = createApi({
     updateCoffee: build.mutation({
       query: ({ id, ...coffee }) => ({
         url: `/coffees/${id}`,
-        method: "PATCH",
+        method: "PUT",
         body: coffee,
       }),
     }),
