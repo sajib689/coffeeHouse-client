@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 export const usersApi = createApi({
     reducerPath: 'users',
     baseQuery: fetchBaseQuery({
-        baseUrl: `http://localhost:5000/api/v1`
+        baseUrl: `https://coffee-house-server-alpha.vercel.app/api/v1`
     }),
     endpoints: (build) => ({
         getUsers: build.query({
