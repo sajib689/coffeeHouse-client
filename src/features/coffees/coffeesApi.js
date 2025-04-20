@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
 export const coffeesApi = createApi({
   reducerPath: "coffees",
   baseQuery: fetchBaseQuery({
@@ -9,9 +10,11 @@ export const coffeesApi = createApi({
       query: () => "/coffees",
     }),
     
+    // Change this to `build.query`
     getCoffeeById: build.query({
       query: (id) => `/coffees/${id}`,
     }),
+
     createCoffee: build.mutation({
       query: (coffee) => ({
         url: "/coffees",
@@ -19,6 +22,7 @@ export const coffeesApi = createApi({
         body: coffee,
       }),
     }),
+
     updateCoffee: build.mutation({
       query: ({ id, ...coffee }) => ({
         url: `/coffees/${id}`,
@@ -26,6 +30,7 @@ export const coffeesApi = createApi({
         body: coffee,
       }),
     }),
+
     deleteCoffee: build.mutation({
       query: (id) => ({
         url: `/coffees/${id}`,
@@ -37,7 +42,7 @@ export const coffeesApi = createApi({
 
 export const {
   useGetCoffeesQuery,
-  useGetCoffeeByIdQuery,
+  useGetCoffeeByIdQuery, // Corrected to query
   useCreateCoffeeMutation,
   useUpdateCoffeeMutation,
   useDeleteCoffeeMutation,

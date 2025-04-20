@@ -54,7 +54,7 @@ const HotCoffees = () => {
                 </Link>
                 :
                 <Link
-                  href={`/order/${coffee?._id}`}
+                  href={`/details/${coffee?._id}`}
                   className="w-full py-2 px-4 bg-[#6F4F37] text-white font-semibold rounded-md hover:bg-[#4e3f29] transition duration-300 ease-in-out"
                 >
                   Buy Now

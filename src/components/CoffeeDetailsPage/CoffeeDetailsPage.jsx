@@ -9,8 +9,7 @@ import Image from 'next/image';
 import { AuthContext } from '@/context/AuthProvider';
 
 const CoffeeDetailsPage = ({id}) => {
-    console.log(id)
-    const router = useRouter();// Use the query param for the dynamic 'id' 
+    const router = useRouter();
       const { user } = useContext(AuthContext);
       const { data: coffee, isLoading, error } = useGetCoffeeByIdQuery(id);
       const [createOrder, { isLoading: isOrdering }] = useCreateOrderMutation();
