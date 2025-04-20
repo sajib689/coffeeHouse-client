@@ -66,9 +66,9 @@ export default function UserManagement() {
                   <td className="p-4">{user.email}</td>
                   <td className="p-4">
                     <select
-                      value={user.role}
+                      value={user?.role}
                       onChange={(e) =>
-                        handleRoleChange(user._id, e.target.value)
+                        handleRoleChange(user?._id, e.target.value)
                       }
                       className="border px-2 py-1 rounded"
                     >

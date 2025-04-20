@@ -31,10 +31,10 @@ export const usersApi = createApi({
             })
         }),
         updateUserRole: build.mutation({
-            query: (id,role) => ({
-                url: `/users/${id}/role`,
+            query: ({_id,role}) => ({
+                url: `/users/${_id}/role`,
                 method: 'PATCH',
-                body: role,
+                body: {role},
             })
         }),
         getUserByEmail: build.query({

@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { useContext, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AuthContext } from "./../../context/AuthProvider";
 import Loader from "@/util/Loader";
 import { useGetUserByEmailQuery } from "@/features/users/usersApi";
 
 const Navbar = () => {
   const { user, logout, loading } = useContext(AuthContext);
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
 
@@ -19,12 +20,13 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout();              
+      router.push('/login');      
     } catch (err) {
       console.error("Logout Error:", err);
     }
   };
-
+  
   const navLinks = (
     <>
       <Link
