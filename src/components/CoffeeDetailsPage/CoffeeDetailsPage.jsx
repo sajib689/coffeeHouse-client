@@ -10,7 +10,7 @@ import { AuthContext } from '@/context/AuthProvider';
 
 const CoffeeDetailsPage = () => {
   const { id } = useParams()
-  console.log(id)
+
     const router = useRouter();
       const { user } = useContext(AuthContext);
       const { data: coffee, isLoading, error } = useGetCoffeeByIdQuery(id);
